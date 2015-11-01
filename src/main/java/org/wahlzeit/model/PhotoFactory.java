@@ -35,6 +35,8 @@ public class PhotoFactory {
 	 */
 	private static PhotoFactory instance = null;
 
+	private static FactoryType factoryType = FactoryType.InstrumentFactory;
+
 	/**
 	 *
 	 */
@@ -50,12 +52,21 @@ public class PhotoFactory {
 	}
 
 	/**
-	 * Public singleton access method.
+	 * Public singleton access method. adap-hw04: Change created instance to
+	 * InstrumentPhotoFactory
 	 */
 	public static synchronized PhotoFactory getInstance() {
 		if (instance == null) {
 			log.config(LogBuilder.createSystemMessage().addAction("setting generic PhotoFactory").toString());
-			setInstance(new PhotoFactory());
+			switch (factoryType) {
+			case InstrumentFactory:
+					setInstance(new InstrumentPhotoFactory());
+				break;
+			case PhotoFactory:
+			default:
+					setInstance(new PhotoFactory());
+				break;
+			}
 		}
 
 		return instance;
@@ -87,21 +98,23 @@ public class PhotoFactory {
 	}
 
 	/**
-	 * Loads a photo. The Java object is loaded from the Google Datastore, the Images in all sizes are loaded from the
-	 * Google Cloud storage.
+	 * Loads a photo. The Java object is loaded from the Google Datastore, the
+	 * Images in all sizes are loaded from the Google Cloud storage.
 	 */
 	public Photo loadPhoto(PhotoId id) {
-	   /* Photo result =
-                OfyService.ofy().load().type(Photo.class).ancestor(KeyFactory.createKey("Application", "Wahlzeit")).filter(Photo.ID, id).first().now();
-        for (PhotoSize size : PhotoSize.values()) {
-            GcsFilename gcsFilename = new GcsFilename("picturebucket", filename);
-
-
-
-        }*/
+		/*
+		 * Photo result =
+		 * OfyService.ofy().load().type(Photo.class).ancestor(KeyFactory.
+		 * createKey("Application", "Wahlzeit")).filter(Photo.ID,
+		 * id).first().now(); for (PhotoSize size : PhotoSize.values()) {
+		 * GcsFilename gcsFilename = new GcsFilename("picturebucket", filename);
+		 * 
+		 * 
+		 * 
+		 * }
+		 */
 		return null;
 	}
-
 
 	/**
 	 *
@@ -117,4 +130,41 @@ public class PhotoFactory {
 		return new PhotoTagCollector();
 	}
 
+	/**
+	 * @methodType get
+	 * @methodProperties primitive
+	 * 
+	 * @return the factoryType
+	 */
+	public static FactoryType getFactoryType() {
+		return factoryType;
+	}
+
+	/**
+	 * @methodType get
+	 * @methodProperties primitive
+	 * 
+	 * Only allows setting when no instance was found
+	 * throws exception otherwise
+	 * 
+	 * @param factoryType
+	 *            the factoryType to set
+	 */
+	public static void setFactoryType(FactoryType factoryType) {
+		isFactoryInstanced();
+		PhotoFactory.factoryType = factoryType;
+	}
+
+	/**
+	 * @methodType assertion
+	 * @methodType primitive
+	 * 
+	 * @return the factorySet
+	 */
+	public static void isFactoryInstanced() {
+		if(instance != null){
+			throw new IllegalStateException("Factory is already instanced."
+					+ " Cannot execute operation.");
+		}
+	}
 }

@@ -7,7 +7,7 @@ import org.wahlzeit.services.DataObject;
  *
  */
 
-public class Coordinate extends DataObject{
+public class Coordinate extends DataObject {
 
 	/**
 	 * Northern latitude: 0 <= latitude <= 90 Southern latitude: 90 <= latitude
@@ -30,13 +30,13 @@ public class Coordinate extends DataObject{
 	public final static double MAX_LONGITUDE = 359;
 	public final static double MIN_LONGITUDE = 0;
 
-	private final static String LATITUDE_ARG_ERR_MSG = "Latitude values have"
-			+ " to be between 0 and 180.";
-	private final static String LONGITUDE_ARG_ERR_MSG = "Longitude values have"
+	private final static String LATITUDE_ARG_ERR_MSG = "Latitude values have" +
+			" to be between 0 and 180.";
+	private final static String LONGITUDE_ARG_ERR_MSG = "Longitude values have" 
 			+ " to be between 0 and 359.";
 
-	/*
-	 * @MethodType Constructor
+	/**
+	 * @MethodType constructor
 	 */
 	public Coordinate(double latitude, double longitude) {
 		if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
@@ -49,26 +49,38 @@ public class Coordinate extends DataObject{
 		}
 	}
 
-	/*
-	 * 
+	/**
+	 * @methodType comparison
+	 * @methodProperties
 	 */
-	public Coordinate getDistance(Coordinate other) {
-		double longitudinalDistance = getLongitudinalDistance(other);
-		double latitutudinalDistance = getLatitudinalDistance(other);
-		return new Coordinate(latitutudinalDistance, longitudinalDistance);
+	public double getDistance(Coordinate other) {
+		isValid(other);
+		
+		double ownLatRad = Math.toRadians(asCommonLatitude());
+		double ownLongRad = Math.toRadians(asCommonLongitude());
+		double otherLatRad = Math.toRadians(other.asCommonLatitude());
+		double otherLongRad = Math.toRadians(other.asCommonLongitude());
+		return 6378.388
+				* Math.acos(Math.sin(ownLatRad) * Math.sin(otherLatRad) 
+						+ Math.cos(ownLatRad) * Math.cos(otherLatRad) * 
+						Math.cos(otherLongRad - ownLongRad));
 	}
 
-	/*
-	 * 
+	/**
+	 * @methodType comparison
+	 * @methodProperties
 	 */
 	public double getLatitudinalDistance(Coordinate other) {
+		isValid(other);
 		return Math.abs(this.latitude - other.getLatitude());
 	}
 
-	/*
-	 * 
+	/**
+	 * @methodType comparison
+	 * @methodProperties
 	 */
 	public double getLongitudinalDistance(Coordinate other) {
+		isValid(other);
 		double distance = Math.abs(this.longitude - other.getLongitude());
 
 		if (distance > 180) {
@@ -78,7 +90,10 @@ public class Coordinate extends DataObject{
 		return distance;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * @methodType conversion
+	 * 
+	 *             (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -93,7 +108,10 @@ public class Coordinate extends DataObject{
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * @methodType comparison
+	 * 
+	 *             (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -108,26 +126,65 @@ public class Coordinate extends DataObject{
 			return false;
 		}
 		Coordinate other = (Coordinate) obj;
-		if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude)) {
+		if (Double.doubleToLongBits(latitude) != 
+				Double.doubleToLongBits(other.latitude)) {
 			return false;
 		}
-		if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude)) {
+		if (Double.doubleToLongBits(longitude) != 
+				Double.doubleToLongBits(other.longitude)) {
 			return false;
 		}
 		return true;
 	}
 
-	/*
-	 * 
+	/**
+	 * @methodType get
+	 * @methodProperties primitive
 	 */
 	public double getLongitude() {
 		return longitude;
 	}
 
-	/*
-	 * 
+	/**
+	 * @methodType get
+	 * @methodProperties primitive
 	 */
 	public double getLatitude() {
 		return latitude;
 	}
+	
+	/**
+	 * @methodType conversion
+	 * @methodProperties primitive 
+	 */
+	public double asCommonLongitude(){
+		if(longitude <= 180){
+			return longitude;
+		} else {
+			return longitude - 360;
+		}
+	}
+	
+	/**
+	 * @methodType conversion
+	 * @methodProperties primitive 
+	 */
+	public double asCommonLatitude(){
+		if(latitude <= 90){
+			return -(90 - latitude);
+		} else {
+			return latitude - 90;
+		}
+	}
+	
+	/**
+	 * @methodType assertion
+	 * @methodProperties primitive
+	 */
+	protected void isValid(Coordinate toTest){
+		if(toTest == null){
+			throw new IllegalArgumentException();
+		}
+	}
+	
 }

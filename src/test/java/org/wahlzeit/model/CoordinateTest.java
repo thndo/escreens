@@ -10,6 +10,8 @@ import org.junit.Test;
  *
  */
 public class CoordinateTest {
+	private final double delta = 1.0;
+	
 	private Coordinate testCoord;
 	private Coordinate firstCoord;
 	private Coordinate secondCoord;
@@ -17,16 +19,16 @@ public class CoordinateTest {
 	@Test
 	public void constructorTest() {
 		testCoord = new Coordinate(80.5, 200.5);
-		assertEquals(80.5, testCoord.getLatitude(), 0.0);
-		assertEquals(200.5, testCoord.getLongitude(), 0.0);
+		assertEquals(80.5, testCoord.getLatitude(), delta);
+		assertEquals(200.5, testCoord.getLongitude(), delta);
 		
 		testCoord = new Coordinate(Coordinate.MIN_LATITUDE, Coordinate.MIN_LONGITUDE);
-		assertEquals(Coordinate.MIN_LATITUDE, testCoord.getLatitude(), 0.0);
-		assertEquals(Coordinate.MIN_LONGITUDE, testCoord.getLongitude(), 0.0);
+		assertEquals(Coordinate.MIN_LATITUDE, testCoord.getLatitude(), delta);
+		assertEquals(Coordinate.MIN_LONGITUDE, testCoord.getLongitude(), delta);
 		
 		testCoord = new Coordinate(Coordinate.MAX_LATITUDE, Coordinate.MAX_LONGITUDE);
-		assertEquals(Coordinate.MAX_LATITUDE, testCoord.getLatitude(), 0.0);
-		assertEquals(Coordinate.MAX_LONGITUDE, testCoord.getLongitude(), 0.0);
+		assertEquals(Coordinate.MAX_LATITUDE, testCoord.getLatitude(), delta);
+		assertEquals(Coordinate.MAX_LONGITUDE, testCoord.getLongitude(), delta);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -54,33 +56,28 @@ public class CoordinateTest {
 		double result;
 		double resultCom;
 		
-		// Normal test
 		firstCoord = new Coordinate(Coordinate.MAX_LATITUDE, 0);
 		secondCoord = new Coordinate(20, 0);
 		result = firstCoord.getLatitudinalDistance(secondCoord);
-		assertEquals(160.0, result, 0.0);
+		assertEquals("Normal test", 160.0, result, delta);
 		
-		// Commutativity test
 		resultCom = secondCoord.getLatitudinalDistance(firstCoord);
-		assertEquals(result, resultCom, 0.0);
+		assertEquals("Commutativity test.", result, resultCom, delta);
 		
-		// Zero result
 		firstCoord = new Coordinate(Coordinate.MAX_LATITUDE, 0);
 		secondCoord = new Coordinate(Coordinate.MAX_LATITUDE, 0);
 		result = firstCoord.getLatitudinalDistance(secondCoord);
-		assertEquals(0.0, result, 0.0);
+		assertEquals("Zero result test.", 0.0, result, delta);
 		
-		// Negative result
 		firstCoord = new Coordinate(20, 0);
 		secondCoord = new Coordinate(Coordinate.MAX_LATITUDE, 0);
 		result = firstCoord.getLatitudinalDistance(secondCoord);
-		assertEquals(160.0, result, 0.0);
+		assertEquals("Negative result test.", 160.0, result, delta);
 		
-		// Subtract zero
 		firstCoord = new Coordinate(60, 0);
 		secondCoord = new Coordinate(0, 0);
 		result = firstCoord.getLatitudinalDistance(secondCoord);
-		assertEquals(firstCoord.getLatitude(), result, 0.0);
+		assertEquals("Subtract zero test.", firstCoord.getLatitude(), result, delta);
 	}
 	
 	@Test
@@ -88,77 +85,65 @@ public class CoordinateTest {
 		double result;
 		double resultCom;
 		
-		// Normal test
 		firstCoord = new Coordinate(0, 240);
 		secondCoord = new Coordinate(0, 120);
 		result = firstCoord.getLongitudinalDistance(secondCoord);
-		assertEquals(120.0, result, 0.0);
+		assertEquals("Normal test.", 120.0, result, delta);
 		
-		// Commutativity test
 		resultCom = secondCoord.getLongitudinalDistance(firstCoord);
-		assertEquals(result, resultCom, 0.0);
+		assertEquals("Commutativity test.", result, resultCom, delta);
 		
-		// Zero result
 		firstCoord = new Coordinate(0, 359);
 		secondCoord = new Coordinate(0, 359);
 		result = firstCoord.getLongitudinalDistance(secondCoord);
-		assertEquals(0.0, result, 0.0);
+		assertEquals("Zero result.", 0.0, result, delta);
 		
-		// Negative result
 		firstCoord = new Coordinate(0, 20);
 		secondCoord = new Coordinate(0, 180);
 		result = firstCoord.getLongitudinalDistance(secondCoord);
-		assertEquals(160.0, result, 0.0);
+		assertEquals("Negative result.", 160.0, result, delta);
 		
-		// Subtract zero
 		firstCoord = new Coordinate(0, 80);
 		secondCoord = new Coordinate(0, 0);
 		result = firstCoord.getLongitudinalDistance(secondCoord);
-		assertEquals(firstCoord.getLongitude(), result, 0.0);
+		assertEquals("Subtract zero.", firstCoord.getLongitude(), result, delta);
 		
-		// Distance larger than 180 without wrapping
 		firstCoord = new Coordinate(0, 350);
 		secondCoord = new Coordinate(0, 30);
 		result = firstCoord.getLongitudinalDistance(secondCoord);
-		assertEquals(40, result, 0.0);
+		assertEquals("Distance larger than 180 without wrapping test.", 40, result, delta);
 	}
 	
 	@Test
 	public void getDistanceTest(){
-		Coordinate result;
-		Coordinate expected;
+		double expected;
+		double result;
 		
-		// Normal test
 		firstCoord = new Coordinate(180, 350);
 		secondCoord = new Coordinate(60, 220);
-		expected = new Coordinate(120, 130);
+		expected = 13358;
 		result = firstCoord.getDistance(secondCoord);
-		assertEquals(expected, result);
+		assertEquals("Normal test.", expected, result, delta);
 		
-		// Commutativity test
 		expected = result;
 		result = secondCoord.getDistance(firstCoord);
-		assertEquals(expected, result);
+		assertEquals("Commutativity test.", expected, result, delta);
 		
-		// Negative test
 		firstCoord = new Coordinate(60, 220);
 		secondCoord = new Coordinate(180, 350);
-		expected = new Coordinate(120, 130);
 		result = firstCoord.getDistance(secondCoord);
-		assertEquals(expected, result);
+		assertEquals("Negative result test.", expected, result, delta);
 		
-		// Zero test
 		firstCoord = new Coordinate(180, Coordinate.MAX_LONGITUDE);
 		secondCoord = new Coordinate(180, Coordinate.MAX_LONGITUDE);
-		expected = new Coordinate(0, 0);
+		expected = 0;
 		result = firstCoord.getDistance(secondCoord);
-		assertEquals(expected, result);
+		assertEquals("Zero result test.", expected, result, delta);
 		
-		// Subtract zero
 		firstCoord = new Coordinate(40, 90);
 		secondCoord = new Coordinate(0, 0);
-		expected = firstCoord;
+		expected = 4452;
 		result = firstCoord.getDistance(secondCoord);
-		assertEquals(expected, result);
+		assertEquals("Distance to zero point test.", expected, result, delta);
 	}
 }
