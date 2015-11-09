@@ -1,6 +1,8 @@
 package org.wahlzeit.model;
 
-public class CartesianCoordinate implements Coordinate {
+import org.wahlzeit.services.DataObject;
+
+public class CartesianCoordinate extends DataObject implements Coordinate {
 	private double x;
 	private double y;
 	private double z;

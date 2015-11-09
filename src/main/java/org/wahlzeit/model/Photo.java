@@ -121,7 +121,7 @@ public class Photo extends DataObject {
 	 * Location at which the Photo was taken Public according to design diagram
 	 * (less visibility might be better)
 	 */
-	public Location location;
+	public Location location = null;
 
 	/**
 	 * The default type is jpg

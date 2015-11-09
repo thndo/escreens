@@ -1,11 +1,13 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.services.DataObject;
+
 /**
  * Class containing a position expressed as latitude and longitude
  *
  */
 
-public class SphericCoordinate implements Coordinate {
+public class SphericCoordinate extends DataObject implements Coordinate {
 
 	/**
 	 * Northern latitude: 0 <= latitude <= 90 Southern latitude: 90 <= latitude
