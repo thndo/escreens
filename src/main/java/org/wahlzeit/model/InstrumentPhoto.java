@@ -1,6 +1,5 @@
 package org.wahlzeit.model;
 
-import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Subclass;
 
 /**
@@ -12,11 +11,6 @@ public class InstrumentPhoto extends Photo {
 	protected String name;
 	protected InstrumentType type;
 	protected int age;
-	
-	// Register subclass for Google Persistence stuff
-	static {
-		ObjectifyService.register(InstrumentPhoto.class);
-	}
 	
 	/**
 	 * @methodType constructor
