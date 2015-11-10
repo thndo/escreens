@@ -1,13 +1,10 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.DataObject;
-
 /**
  * Class containing a position expressed as latitude and longitude
  *
  */
-
-public class SphericCoordinate extends DataObject implements Coordinate {
+public class SphericCoordinate extends AbstractCoordinate {
 
 	/**
 	 * Northern latitude: 0 <= latitude <= 90 Southern latitude: 90 <= latitude
@@ -30,13 +27,13 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 	 */
 	private double radius;
 
-	public final static double EPSILON = 0.0001;
+	public final static double EPSILON = 0.001;
 	public final static double MAX_LATITUDE = 180;
 	public final static double MIN_LATITUDE = 0;
 	public final static double MAX_LONGITUDE = 359;
 	public final static double MIN_LONGITUDE = 0;
 	public final static double EARTH_RADIUS = 6371;
-	
+
 	private final static String LATITUDE_ARG_ERR_MSG = "Latitude values have" + " to be between 0 and 180.";
 	private final static String LONGITUDE_ARG_ERR_MSG = "Longitude values have" + " to be between 0 and 359.";
 
@@ -55,27 +52,19 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.wahlzeit.model.Coordinate1#getDistance(org.wahlzeit.model.Coordinate)
+	/**
+	 * @see AbstractCoordinate
+	 * @methodType comparison
 	 */
-	@Override
-	public double getDistance(Coordinate other) {
-		isValid(other);
-		SphericCoordinate otherCoord;
-		if(other instanceof SphericCoordinate){
-			otherCoord = (SphericCoordinate) other;
-		} else {
-			otherCoord = SphericCoordinate.asSphericCoordinate(other);
-		}
+	protected double doGetDistance(Coordinate other) {
+		SphericCoordinate otherCoord = (SphericCoordinate) other;
 		double ownLatRad = Math.toRadians(asCommonLatitude());
 		double ownLongRad = Math.toRadians(asCommonLongitude());
 		double otherLatRad = Math.toRadians(otherCoord.asCommonLatitude());
 		double otherLongRad = Math.toRadians(otherCoord.asCommonLongitude());
 		return EARTH_RADIUS * Math.acos(Math.sin(ownLatRad) * Math.sin(otherLatRad)
-				+ Math.cos(ownLatRad) * Math.cos(otherLatRad) * Math.cos(otherLongRad - ownLongRad));
+				+ Math.cos(ownLatRad) * Math.cos(otherLatRad) 
+				* Math.cos(otherLongRad - ownLongRad));
 	}
 
 	/**
@@ -103,6 +92,66 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 	}
 
 	/**
+	 * Converts a coordinate into a SphericCoordinate
+	 * 
+	 * @methodType conversion
+	 * @param other
+	 * @return
+	 */
+	public static SphericCoordinate asSphericCoordinate(Coordinate other) {
+		isValid(other);
+		if (other instanceof SphericCoordinate) {
+			return (SphericCoordinate) other;
+		} else {
+			double[] otherRepresentation = other.asSphericRepresentation();
+			isSphericRepresentationValid(otherRepresentation);
+			return new SphericCoordinate(otherRepresentation[0], otherRepresentation[1], otherRepresentation[2]);
+		}
+	}
+
+	/**
+	 * Checks whether the given representation is a valid representation of a
+	 * Spheric coordinate
+	 * 
+	 * @methodType assertion
+	 */
+	protected static void isSphericRepresentationValid(double[] representation) {
+		if (representation == null || !(representation instanceof double[])
+				|| ((double[]) representation).length != 3) {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	/**
+	 * @see Coordinate
+	 * @methodType interpretation
+	 */
+	@Override
+	public double[] asSphericRepresentation() {
+		return new double[] { latitude, longitude, radius };
+	}
+
+	/**
+	 * @see Coordinate
+	 * @methodType interpretation
+	 */
+	@Override
+	public double[] asCartesianRepresentation() {
+		double x = radius * Math.sin(Math.toRadians(latitude)) * Math.cos(Math.toRadians(longitude));
+		double y = radius * Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(longitude));
+		double z = radius * Math.cos(Math.toRadians(latitude));
+		return new double[] { x, y, z };
+	}
+
+	/**
+	 * @see AbstractCoordinate
+	 * @methodType conversion
+	 */
+	protected Coordinate asOwnCoordinate(Coordinate other) {
+		return SphericCoordinate.asSphericCoordinate(other);
+	}
+
+	/**
 	 * @methodType conversion
 	 * 
 	 *             (non-Javadoc)
@@ -116,6 +165,8 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 		temp = Double.doubleToLongBits(latitude);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(longitude);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(radius);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
@@ -144,26 +195,10 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 		if (Math.abs(longitude - other.longitude) > EPSILON) {
 			return false;
 		}
-		return true;
-	}
-
-	/**
-	 * Converts a coordinate into a SphericCoordinate
-	 * 
-	 * @methodType conversion
-	 * @param other
-	 * @return
-	 */
-	public static SphericCoordinate asSphericCoordinate(Coordinate other) {
-		isValid(other);
-		if (other instanceof SphericCoordinate) {
-			return (SphericCoordinate) other;
-		} else {
-			double[] otherRepresentation = other.asSphericRepresentation();
-			isSphericRepresentationValid(otherRepresentation);
-			return new SphericCoordinate(otherRepresentation[0], 
-					otherRepresentation[1], otherRepresentation[2]);
+		if (Math.abs(radius - other.radius) > EPSILON) {
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -205,65 +240,4 @@ public class SphericCoordinate extends DataObject implements Coordinate {
 			return latitude - 90;
 		}
 	}
-
-	/**
-	 * @methodType assertion
-	 * @methodProperties primitive
-	 */
-	protected static void isValid(Coordinate toTest) {
-		if (toTest == null) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Checks whether a SphericRepresentation is valid
-	 * 
-	 * @methodType assertion
-	 */
-	protected static void isSphericRepresentationValid(double[] representation) {
-		if (representation == null || !(representation instanceof double[]) ||
-				((double[])representation).length != 3) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * @see Coordinate
-	 * @methodType interpretation
-	 */
-	@Override
-	public double[] asSphericRepresentation() {
-		return new double[] { latitude, longitude, radius };
-	}
-
-	/**
-	 * @see Coordinate
-	 * @methodType interpretation
-	 */
-	@Override
-	public double[] asCartesianRepresentation() {
-		double x = radius * Math.sin(Math.toRadians(latitude)) 
-				* Math.cos(Math.toRadians(longitude));
-		double y = radius * Math.sin(Math.toRadians(latitude)) 
-				* Math.sin(Math.toRadians(longitude));
-		double z = radius * Math.cos(Math.toRadians(latitude));
-		return new double[]{x,y,z};
-	}
-
-	/**
-	 * @see Coordinate
-	 * @methodType comparison
-	 */
-	@Override
-	public boolean isEqual(Coordinate other) {
-		if(other instanceof SphericCoordinate){
-			return equals(other);
-		} else {
-			 SphericCoordinate otherCoord = 
-					 SphericCoordinate.asSphericCoordinate(other);
-			 return equals(otherCoord);
-		}
-	}
-
 }

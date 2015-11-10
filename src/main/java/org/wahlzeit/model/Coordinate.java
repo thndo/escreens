@@ -3,8 +3,9 @@ package org.wahlzeit.model;
 public interface Coordinate {
 
 	/**
+	 * Calculates the distance between 2 Coordinates
+	 * (not Euclidian distance)
 	 * @methodType comparison
-	 * @methodProperties
 	 */
 	double getDistance(Coordinate other);
 

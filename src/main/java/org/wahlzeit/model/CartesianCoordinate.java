@@ -1,13 +1,17 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.DataObject;
-
-public class CartesianCoordinate extends DataObject implements Coordinate {
+/**
+ * Class containing a Coordinate represented as a Cartesian Coordinate
+ *
+ */
+public class CartesianCoordinate extends AbstractCoordinate {
 	private double x;
 	private double y;
 	private double z;
-	
+
+	public final static double EPSILON = 0.001;
 	public final static double EARTH_RADIUS = 6371;
+
 	/**
 	 * @methodType constructor
 	 * 
@@ -15,46 +19,25 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 	 * @param y
 	 * @param z
 	 */
-	public CartesianCoordinate(double x, double y, double z){
+	public CartesianCoordinate(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	/**
-	 * @see Coordinate
+	 * @see AbstractCoordinate
 	 * @methodType comparison
 	 */
-	@Override
-	public double getDistance(Coordinate other) {
-		CartesianCoordinate otherCoord;
-		if(other instanceof CartesianCoordinate){
-			otherCoord = (CartesianCoordinate)other;
-		} else {
-			otherCoord = CartesianCoordinate.asCartesianCoordinate(other);
-		}
-		double euclidianDistance = Math.sqrt(Math.pow(this.x - otherCoord.x, 2)
-				+ Math.pow(this.y - otherCoord.y, 2) 
-				+ Math.pow(this.z - otherCoord.z, 2)); 
+	protected double doGetDistance(Coordinate other) {
+		CartesianCoordinate otherCoord = (CartesianCoordinate) other;
+		double euclidianDistance = Math.sqrt(Math.pow(this.x - otherCoord.x, 2) 
+				+ Math.pow(this.y - otherCoord.y, 2)
+				+ Math.pow(this.z - otherCoord.z, 2));
 		double omega = 2 * Math.asin(euclidianDistance / 2 / EARTH_RADIUS);
 		return omega * EARTH_RADIUS;
-	}
-	
-	/**
-	 * @see Coordinate
-	 * @methodType conversion
-	 */
-	@Override
-	public boolean isEqual(Coordinate other) {
-		if(other instanceof CartesianCoordinate){
-			return equals(other);
-		} else {
-			CartesianCoordinate otherCoord = 
-					CartesianCoordinate.asCartesianCoordinate(other);
-			return equals(otherCoord);
-		}
-	}
-	
+	};
+
 	/**
 	 * Converts a coordinate into a CartesianCoordinate
 	 * 
@@ -74,45 +57,33 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 		}
 	}
 
-	
 	/**
-	 * @methodType assertion
-	 * @methodProperties primitive
-	 */
-	protected static void isValid(Coordinate toTest) {
-		if (toTest == null) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Checks whether a CartesianRepresentation is valid
+	 * Checks whether a the given representation is a valid representation of a
+	 * Cartesian coordinate
 	 * 
 	 * @methodType assertion
 	 */
 	protected static void isCartesianRepresentationValid(double[] representation) {
-		if (representation == null || !(representation instanceof double[]) ||
-				((double[])representation).length != 3) {
+		if (representation == null || !(representation instanceof double[])
+				|| ((double[]) representation).length != 3) {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	/**
 	 * @see Coordinate
 	 * @methodType interpretation
 	 */
 	@Override
 	public double[] asSphericRepresentation() {
-		double radius = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) 
-				+ Math.pow(z, 2));
+		double radius = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
 		double latitude = Math.toDegrees(Math.acos(z / radius));
 		double longitude = Math.toDegrees(Math.atan2(y, x));
-		if(longitude < 0){
+		if (longitude < 0) {
 			longitude = 360 + longitude;
 		}
-		
-		return new double[]{latitude, 
-				longitude, radius};
+
+		return new double[] { latitude, longitude, radius };
 	}
 
 	/**
@@ -121,9 +92,16 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 	 */
 	@Override
 	public double[] asCartesianRepresentation() {
-		return new double[]{x, y, z};
+		return new double[] { x, y, z };
 	}
-	
+
+	/**
+	 * @see AbstractCoordinate
+	 * @methodType conversion
+	 */
+	protected Coordinate asOwnCoordinate(Coordinate other) {
+		return CartesianCoordinate.asCartesianCoordinate(other);
+	}
 	
 	/**
 	 * @methodType getter
@@ -149,7 +127,9 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 		return z;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -166,7 +146,9 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -181,13 +163,13 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 			return false;
 		}
 		CartesianCoordinate other = (CartesianCoordinate) obj;
-		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x)) {
+		if (Math.abs(x - other.x) > EPSILON) {
 			return false;
 		}
-		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y)) {
+		if (Math.abs(y - other.y) > EPSILON) {
 			return false;
 		}
-		if (Double.doubleToLongBits(z) != Double.doubleToLongBits(other.z)) {
+		if (Math.abs(z - other.z) > EPSILON) {
 			return false;
 		}
 		return true;
