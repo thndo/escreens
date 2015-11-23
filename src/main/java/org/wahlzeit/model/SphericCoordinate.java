@@ -41,15 +41,10 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @MethodType constructor
 	 */
 	public SphericCoordinate(double latitude, double longitude, double radius) {
-		if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
-			throw new IllegalArgumentException(LATITUDE_ARG_ERR_MSG);
-		} else if (longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
-			throw new IllegalArgumentException(LONGITUDE_ARG_ERR_MSG);
-		} else {
-			this.latitude = latitude;
-			this.longitude = longitude;
-			this.radius = radius;
-		}
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.radius = radius;
+		assertValidState();
 	}
 
 	/**
@@ -63,8 +58,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 		double otherLatRad = Math.toRadians(otherCoord.asCommonLatitude());
 		double otherLongRad = Math.toRadians(otherCoord.asCommonLongitude());
 		return EARTH_RADIUS * Math.acos(Math.sin(ownLatRad) * Math.sin(otherLatRad)
-				+ Math.cos(ownLatRad) * Math.cos(otherLatRad) 
-				* Math.cos(otherLongRad - ownLongRad));
+				+ Math.cos(ownLatRad) * Math.cos(otherLatRad) * Math.cos(otherLongRad - ownLongRad));
 	}
 
 	/**
@@ -72,8 +66,11 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties
 	 */
 	public double getLatitudinalDistance(SphericCoordinate other) {
-		isValid(other);
-		return Math.abs(this.latitude - other.getLatitude());
+		assertValidState();
+		assertNotNull(other);
+		double latDistance = Math.abs(this.latitude - other.getLatitude());
+		assertValidState();
+		return latDistance;
 	}
 
 	/**
@@ -81,13 +78,15 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties
 	 */
 	public double getLongitudinalDistance(SphericCoordinate other) {
-		isValid(other);
+		assertValidState();
+		assertNotNull(other);
 		double distance = Math.abs(this.longitude - other.getLongitude());
 
 		if (distance > 180) {
 			distance = 360 - distance;
 		}
 
+		assertValidState();
 		return distance;
 	}
 
@@ -99,14 +98,17 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @return
 	 */
 	public static SphericCoordinate asSphericCoordinate(Coordinate other) {
-		isValid(other);
+		assertNotNull(other);
+		SphericCoordinate retCoord;
 		if (other instanceof SphericCoordinate) {
-			return (SphericCoordinate) other;
+			retCoord = (SphericCoordinate) other;
 		} else {
 			double[] otherRepresentation = other.asSphericRepresentation();
 			isSphericRepresentationValid(otherRepresentation);
-			return new SphericCoordinate(otherRepresentation[0], otherRepresentation[1], otherRepresentation[2]);
+			retCoord = new SphericCoordinate(otherRepresentation[0], otherRepresentation[1], otherRepresentation[2]);
 		}
+		retCoord.assertValidState();
+		return retCoord;
 	}
 
 	/**
@@ -128,6 +130,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 */
 	@Override
 	public double[] asSphericRepresentation() {
+		assertValidState();
 		return new double[] { latitude, longitude, radius };
 	}
 
@@ -137,6 +140,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 */
 	@Override
 	public double[] asCartesianRepresentation() {
+		assertValidState();
 		double x = radius * Math.sin(Math.toRadians(latitude)) * Math.cos(Math.toRadians(longitude));
 		double y = radius * Math.sin(Math.toRadians(latitude)) * Math.sin(Math.toRadians(longitude));
 		double z = radius * Math.cos(Math.toRadians(latitude));
@@ -159,6 +163,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 */
 	@Override
 	public int hashCode() {
+		assertValidState();
 		final int prime = 31;
 		int result = 1;
 		long temp;
@@ -176,16 +181,14 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 */
 	@Override
 	public boolean equals(Object obj) {
+		assertValidState();
 		if (this == obj) {
-			System.out.println("Spheric same");
 			return true;
 		}
 		if (obj == null) {
-			System.out.println("Spheric null");
 			return false;
 		}
 		if (!(obj instanceof SphericCoordinate)) {
-			System.out.println("Spheric not Spheric");
 			return false;
 		}
 		SphericCoordinate other = (SphericCoordinate) obj;
@@ -206,6 +209,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double getLongitude() {
+		assertValidState();
 		return longitude;
 	}
 
@@ -214,6 +218,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double getLatitude() {
+		assertValidState();
 		return latitude;
 	}
 
@@ -222,6 +227,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double asCommonLongitude() {
+		assertValidState();
 		if (longitude <= 180) {
 			return longitude;
 		} else {
@@ -234,10 +240,29 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double asCommonLatitude() {
+		assertValidState();
 		if (latitude <= 90) {
 			return -(90 - latitude);
 		} else {
 			return latitude - 90;
 		}
+	}
+
+	/**
+	 * Asserts whether the coordinate's state is valid
+	 * 
+	 * @methodType assertion
+	 */
+	protected void assertValidState() {
+		if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
+			throw new IllegalStateException(LATITUDE_ARG_ERR_MSG);
+		} else if (longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
+			throw new IllegalStateException(LONGITUDE_ARG_ERR_MSG);
+		} else if (radius < 0) {
+			throw new IllegalStateException();
+		}
+		assertValidDouble(latitude);
+		assertValidDouble(longitude);
+		assertValidDouble(radius);
 	}
 }

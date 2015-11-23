@@ -53,6 +53,6 @@ public class CoordinateTest {
 		assertEquals("Normal test", 9012.4, tokioBerlin, 0.1);
 		assertEquals("Commutativity", tokioBerlin, berlinCart.getDistance(tokio), 0.1);
 		assertEquals("Zero distance", 0.0, tokioSphere.getDistance(tokioCart), 0.1);
-		assertEquals("Another normal test", 8867.1, tokioSphere.getDistance(losangelesCart), 0.1);
+		assertEquals("Another normal test", 8867.1, tokioCart.getDistance(losangelesCart), 0.1);
 	}
 }

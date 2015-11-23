@@ -8,9 +8,11 @@ public abstract class AbstractCoordinate implements Coordinate {
 	 */
 	@Override
 	public double getDistance(Coordinate other) {
-		isValid(other);
+		assertNotNull(other);
 		Coordinate otherCoord = asOwnCoordinate(other);
-		return doGetDistance(otherCoord);
+		double distance = doGetDistance(otherCoord);
+		assertValidDouble(distance);
+		return distance;
 	}
 
 	/**
@@ -29,12 +31,15 @@ public abstract class AbstractCoordinate implements Coordinate {
 	 */
 	@Override
 	public boolean isEqual(Coordinate other) {
-		isValid(other);
+		assertNotNull(other);
 		Coordinate otherCoord = asOwnCoordinate(other);
 		return equals(otherCoord);
 	}
 
 	/**
+	 * It may return a invalid representation of a SphericCoordinate
+	 * WARNING: Validity is not asserted
+	 * 
 	 * @see Coordinate
 	 * @methodType interpretation
 	 */
@@ -42,6 +47,9 @@ public abstract class AbstractCoordinate implements Coordinate {
 	public abstract double[] asSphericRepresentation();
 
 	/**
+	 * It may return a invalid representation of a CartesianCoordinate
+	 * WARNING: Validity is not asserted
+	 * 
 	 * @see Coordinate
 	 * @methodType interpretation
 	 */
@@ -54,12 +62,28 @@ public abstract class AbstractCoordinate implements Coordinate {
 	 * @methodType assertion
 	 * @methodProperties primitive
 	 */
-	protected static void isValid(Coordinate toTest) {
+	protected static void assertNotNull(Coordinate toTest) {
 		if (toTest == null) {
 			throw new IllegalArgumentException();
 		}
 	}
 
+	/**
+	 * Checks whether the given value is not a valid double
+	 * 
+	 * NaN is considered not valid
+	 * Infinity is considered not valid
+	 * 
+	 * @methodType assertion
+	 */
+	protected static void assertValidDouble(double toTest){
+		if(Double.isNaN(toTest)){
+			throw new IllegalStateException();
+		} else if(Double.isInfinite(toTest)){
+			throw new IllegalStateException();
+		}
+	}
+	
 	/**
 	 * @methodType conversion
 	 */
