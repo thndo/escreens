@@ -17,6 +17,7 @@ import static org.wahlzeit.services.OfyService.ofy;
  * 
  * @review
  */
+@Pattern(name = "Singleton", participants = { "Static Instance" })
 public class GlobalsManager extends ObjectManager {
 
 	private static final Logger log = Logger.getLogger(GlobalsManager.class.getName());

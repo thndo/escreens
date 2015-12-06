@@ -22,6 +22,7 @@ package org.wahlzeit.handlers;
 
 import org.wahlzeit.model.AccessRights;
 import org.wahlzeit.model.ModelConfig;
+import org.wahlzeit.model.Pattern;
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 /**
  * A superclass for handling parts of web pages.
  */
+@Pattern(name = "Strategy", participants = { "AbstractStrategy", "DefaultStrategy" })
 public abstract class AbstractWebPartHandler implements WebPartHandler {
 
 	private static final Logger log = Logger.getLogger(AbstractWebPartHandler.class.getName());
@@ -98,8 +100,8 @@ public abstract class AbstractWebPartHandler implements WebPartHandler {
 	 *
 	 */
 	protected String getPhotoAsRelativeResourcePathString(Photo photo, PhotoSize size) {
-		return SysConfig.getPhotosDir().getRelativeDir() + "/?type=image&photoId=" + photo.getId().asString() +
-				"&size=" + String.valueOf(size.asInt());
+		return SysConfig.getPhotosDir().getRelativeDir() + "/?type=image&photoId=" + photo.getId().asString() + "&size="
+				+ String.valueOf(size.asInt());
 	}
 
 	/**
@@ -160,14 +162,12 @@ public abstract class AbstractWebPartHandler implements WebPartHandler {
 	 */
 	public final String handleGet(UserSession us, String link, Map args) {
 		if (!hasAccessRights(us, args)) {
-			log.warning(LogBuilder.createSystemMessage().
-					addMessage("insufficient rights for GET").toString());
+			log.warning(LogBuilder.createSystemMessage().addMessage("insufficient rights for GET").toString());
 			return getIllegalAccessErrorPage(us);
 		}
 
 		if (!isWellFormedGet(us, link, args)) {
-			log.warning(LogBuilder.createSystemMessage().
-					addMessage("received ill-formed GET").toString());
+			log.warning(LogBuilder.createSystemMessage().addMessage("received ill-formed GET").toString());
 			return getIllegalArgumentErrorPage(us);
 		}
 
@@ -226,7 +226,8 @@ public abstract class AbstractWebPartHandler implements WebPartHandler {
 	}
 
 	/**
-	 * @param args TODO
+	 * @param args
+	 *            TODO
 	 */
 	protected String doHandleGet(UserSession us, String link, Map args) {
 		return link;

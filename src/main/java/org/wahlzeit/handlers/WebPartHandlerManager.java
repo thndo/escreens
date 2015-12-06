@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-
 /**
  * A manager class for web parts.
  */
@@ -106,10 +105,8 @@ public class WebPartHandlerManager {
 	 */
 	public WebPartHandler addWebPartHandler(String name, WebPartHandler myHandler) {
 		handler.put(name, myHandler);
-		log.config(LogBuilder.createSystemMessage().
-				addAction("add WebPartHandler").
-				addParameter("name", name).
-				addParameter("handler", myHandler).toString());
+		log.config(LogBuilder.createSystemMessage().addAction("add WebPartHandler").addParameter("name", name)
+				.addParameter("handler", myHandler).toString());
 		return myHandler;
 	}
 

@@ -20,15 +20,16 @@
 
 package org.wahlzeit.handlers;
 
+import org.wahlzeit.model.Pattern;
 import org.wahlzeit.model.UserSession;
 import org.wahlzeit.webparts.WebPart;
 
 import java.util.Map;
 
-
 /**
  * The general interface for web partgs.
  */
+@Pattern(name = "Strategy", participants = "StrategyInterface")
 public interface WebPartHandler {
 
 	/**

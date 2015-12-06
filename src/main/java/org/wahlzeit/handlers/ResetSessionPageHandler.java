@@ -22,6 +22,7 @@ package org.wahlzeit.handlers;
 
 import org.wahlzeit.model.AccessRights;
 import org.wahlzeit.model.ModelConfig;
+import org.wahlzeit.model.Pattern;
 import org.wahlzeit.model.UserSession;
 import org.wahlzeit.utils.HtmlUtil;
 import org.wahlzeit.webparts.WebPart;
@@ -31,6 +32,7 @@ import java.util.Map;
 /**
  * A handler class for a specific web page.
  */
+@Pattern(name="Strategy",participants={"ConcreteStrategy"})
 public class ResetSessionPageHandler extends AbstractWebPageHandler {
 
 	/**

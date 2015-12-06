@@ -22,6 +22,7 @@ package org.wahlzeit.handlers;
 
 import org.wahlzeit.model.AccessRights;
 import org.wahlzeit.model.Client;
+import org.wahlzeit.model.Pattern;
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoFilter;
 import org.wahlzeit.model.PhotoId;
@@ -39,6 +40,7 @@ import java.util.Map;
 /**
  * A handler class for a specific web page.
  */
+@Pattern(name="Strategy",participants={"ConcreteStrategy"})
 public class ShowPhotoPageHandler extends AbstractWebPageHandler implements WebFormHandler {
 
 	/**
