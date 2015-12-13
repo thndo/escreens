@@ -21,9 +21,9 @@ public class CoordinateTest {
 	
 	@Before
 	public void setUp(){
-		berlin = new SphericCoordinate(142, 347, SphericCoordinate.EARTH_RADIUS);
-		tokio = new SphericCoordinate(125, 221, SphericCoordinate.EARTH_RADIUS);
-		losangeles = new SphericCoordinate(125, 118, SphericCoordinate.EARTH_RADIUS);
+		berlin = SphericCoordinate.createSphericCoordinate(142, 347, SphericCoordinate.EARTH_RADIUS);
+		tokio = SphericCoordinate.createSphericCoordinate(125, 221, SphericCoordinate.EARTH_RADIUS);
+		losangeles = SphericCoordinate.createSphericCoordinate(125, 118, SphericCoordinate.EARTH_RADIUS);
 		berlinCart = CartesianCoordinate.asCartesianCoordinate(berlin);
 		tokioCart = CartesianCoordinate.asCartesianCoordinate(tokio);
 		losangelesCart = CartesianCoordinate.asCartesianCoordinate(losangeles);

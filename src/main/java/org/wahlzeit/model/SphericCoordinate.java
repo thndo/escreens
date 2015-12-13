@@ -1,5 +1,8 @@
 package org.wahlzeit.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class containing a position expressed as latitude and longitude
  *
@@ -11,7 +14,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * <= 180 The 90th latitude is the zero latitude in the traditional sense.s
 	 * 
 	 */
-	private double latitude;
+	private final double latitude;
 
 	/**
 	 * Eastern longitude: 0 <= longitude <= 180 Western longitude: 180 <=
@@ -20,14 +23,19 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * The 360th longitude is the same as the 0th longitude. It wraps around at
 	 * the 360th longitude
 	 */
-	private double longitude;
+	private final double longitude;
 
 	/**
 	 * 
 	 */
-	private double radius;
+	private final double radius;
 
-	public final static double EPSILON = 0.001;
+	/**
+	 * Map containing all initialized SphericCoordinate values
+	 */
+	private static Map<String, SphericCoordinate> instancedValues = new HashMap<>();
+
+	public final static double EPSILON = 0.0000001;
 	public final static double MAX_LATITUDE = 180;
 	public final static double MIN_LATITUDE = 0;
 	public final static double MAX_LONGITUDE = 359;
@@ -36,15 +44,34 @@ public class SphericCoordinate extends AbstractCoordinate {
 
 	private final static String LATITUDE_ARG_ERR_MSG = "Latitude values have" + " to be between 0 and 180.";
 	private final static String LONGITUDE_ARG_ERR_MSG = "Longitude values have" + " to be between 0 and 359.";
+	private final static String IDENTIFICATION_DELIMITER = "#";
 
 	/**
 	 * @MethodType constructor
 	 */
-	public SphericCoordinate(double latitude, double longitude, double radius) {
+	private SphericCoordinate(double latitude, double longitude, double radius) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = radius;
 		assertValidState();
+	}
+
+	/**
+	 * Create a SphericCoordinate with given parameters and returns a value
+	 * object representing that Coordinate
+	 * 
+	 * @MethodType Factory
+	 */
+	public static SphericCoordinate createSphericCoordinate(double latitude, double longitude, double radius) {
+		String coordinateIdentifier = String.valueOf(latitude) + IDENTIFICATION_DELIMITER + String.valueOf(longitude)
+				+ IDENTIFICATION_DELIMITER + String.valueOf(radius);
+		if (instancedValues.containsKey(coordinateIdentifier)) {
+			return instancedValues.get(coordinateIdentifier);
+		} else {
+			SphericCoordinate retValue = new SphericCoordinate(latitude, longitude, radius);
+			instancedValues.put(coordinateIdentifier, retValue);
+			return retValue;
+		}
 	}
 
 	/**
@@ -99,16 +126,25 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 */
 	public static SphericCoordinate asSphericCoordinate(Coordinate other) {
 		assertNotNull(other);
-		SphericCoordinate retCoord;
-		if (other instanceof SphericCoordinate) {
-			retCoord = (SphericCoordinate) other;
-		} else {
-			double[] otherRepresentation = other.asSphericRepresentation();
-			isSphericRepresentationValid(otherRepresentation);
-			retCoord = new SphericCoordinate(otherRepresentation[0], otherRepresentation[1], otherRepresentation[2]);
-		}
+		double[] otherRepresentation = other.asSphericRepresentation();
+		isSphericRepresentationValid(otherRepresentation);
+		SphericCoordinate retCoord = createSphericCoordinate(otherRepresentation[0], otherRepresentation[1],
+				otherRepresentation[2]);
 		retCoord.assertValidState();
 		return retCoord;
+	}
+
+	/**
+	 * Conversion dummy to avoid unnecessary calculations
+	 * 
+	 * @methodType conversion
+	 * @param other
+	 * @return
+	 */
+	public static SphericCoordinate asSphericCoordinate(SphericCoordinate other) {
+		assertNotNull(other);
+		other.assertValidState();
+		return (SphericCoordinate) other;
 	}
 
 	/**
@@ -118,8 +154,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodType assertion
 	 */
 	protected static void isSphericRepresentationValid(double[] representation) {
-		if (representation == null || !(representation instanceof double[])
-				|| ((double[]) representation).length != 3) {
+		if (representation == null || representation.length != 3) {
 			throw new IllegalArgumentException();
 		}
 	}
@@ -209,7 +244,6 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double getLongitude() {
-		assertValidState();
 		return longitude;
 	}
 
@@ -218,7 +252,6 @@ public class SphericCoordinate extends AbstractCoordinate {
 	 * @methodProperties primitive
 	 */
 	public double getLatitude() {
-		assertValidState();
 		return latitude;
 	}
 
