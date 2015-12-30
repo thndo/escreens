@@ -13,7 +13,8 @@ public class CartesianCoordinate extends AbstractCoordinate {
 	private final double z;
 
 	/**
-	 * Map containing all initialized CartesianCoordinate values identified by their 
+	 * Map containing all initialized CartesianCoordinate values identified by
+	 * their
 	 */
 	private static Map<String, CartesianCoordinate> instancedValues = new HashMap<>();
 
@@ -51,9 +52,15 @@ public class CartesianCoordinate extends AbstractCoordinate {
 		if (instancedValues.containsKey(coordinateIdentifier)) {
 			return instancedValues.get(coordinateIdentifier);
 		} else {
-			CartesianCoordinate retValue = new CartesianCoordinate(x, y, z);
-			instancedValues.put(coordinateIdentifier, retValue);
-			return retValue;
+			synchronized (instancedValues) {
+				if (instancedValues.containsKey(coordinateIdentifier)) {
+					return instancedValues.get(coordinateIdentifier);
+				} else {
+					CartesianCoordinate retValue = new CartesianCoordinate(x, y, z);
+					instancedValues.put(coordinateIdentifier, retValue);
+					return retValue;
+				}
+			}
 		}
 	}
 

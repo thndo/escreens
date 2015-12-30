@@ -68,9 +68,15 @@ public class SphericCoordinate extends AbstractCoordinate {
 		if (instancedValues.containsKey(coordinateIdentifier)) {
 			return instancedValues.get(coordinateIdentifier);
 		} else {
-			SphericCoordinate retValue = new SphericCoordinate(latitude, longitude, radius);
-			instancedValues.put(coordinateIdentifier, retValue);
-			return retValue;
+			synchronized (instancedValues) {
+				if (instancedValues.containsKey(coordinateIdentifier)) {
+					return instancedValues.get(coordinateIdentifier);
+				} else {
+					SphericCoordinate retValue = new SphericCoordinate(latitude, longitude, radius);
+					instancedValues.put(coordinateIdentifier, retValue);
+					return retValue;
+				}
+			}
 		}
 	}
 

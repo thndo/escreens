@@ -1,108 +1,62 @@
 package org.wahlzeit.model;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.googlecode.objectify.annotation.Subclass;
 
 /**
  * Class containing a position expressed as latitude and longitude
  *
  */
-@Subclass(index=true)
+@Subclass(index = true)
 public class InstrumentPhoto extends Photo {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8613558234551114986L;
 	protected String name;
-	protected InstrumentType type;
-	protected int age;
-	
+	protected Set<Instrument> instruments = Collections.synchronizedSet(new HashSet<Instrument>());
+
 	/**
 	 * @methodType constructor
 	 * 
 	 * @param myId
 	 * @param name
-	 * @param type
-	 * @param age
 	 */
-	public InstrumentPhoto(PhotoId myId, String name, InstrumentType type, 
-			int age) {
+	public InstrumentPhoto(PhotoId myId, String name) {
 		super(myId);
 		this.name = name;
-		this.type = type;
-		this.age = age;
 	}
-	
+
 	/**
 	 * @methodType constructor
 	 * 
 	 * @param name
-	 * @param type
-	 * @param age
 	 */
-	public InstrumentPhoto(String name, InstrumentType type, int age){
+	public InstrumentPhoto(String name) {
 		super();
 		this.name = name;
-		this.type = type;
-		this.age = age;
 	}
-	
-	/**
-	 * @methodType constructor
-	 * @methodProperties convenience
-	 * 
-	 * @param name
-	 * @param type
-	 */
-	public InstrumentPhoto(String name, InstrumentType type){
-		this(name, type, 0);
-	}
-	
-	/**
-	 * @methodType constructor
-	 * @methodProperties convenience
-	 * 
-	 * @param myId
-	 * @param name
-	 * @param type
-	 */
-	public InstrumentPhoto(PhotoId myId, String name, InstrumentType type){
-		this(myId, name, type, 0);
-	}
-	
-	/**
-	 * @methodType constructor
-	 * @methodProperties convenience
-	 * 
-	 * @param name
-	 */
-	public InstrumentPhoto(String name){
-		this(name, InstrumentType.Unknown);
-	}
-	
-	
-	/**
-	 * @methodType constructor
-	 * @methodProperties convenience
-	 * 
-	 * @param myId
-	 * @param name
-	 */
-	public InstrumentPhoto(PhotoId myId, String name){
-		this(myId, name, InstrumentType.Unknown);
-	}
-	
+
 	/**
 	 * @methodType constructor
 	 * @methodProperties convenience
 	 */
-	public InstrumentPhoto(){
+	public InstrumentPhoto() {
 		this("");
 	}
-	
+
 	/**
 	 * @methodType constructor
 	 * @methodProperties convenience
 	 */
-	public InstrumentPhoto(PhotoId myId){
+	public InstrumentPhoto(PhotoId myId) {
 		this(myId, "");
 	}
-	
+
 	/**
 	 * @methodType get
 	 * @methodProperties primitive
@@ -117,7 +71,8 @@ public class InstrumentPhoto extends Photo {
 	 * @methodType set
 	 * @methodProperties primitive
 	 * 
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -125,42 +80,16 @@ public class InstrumentPhoto extends Photo {
 
 	/**
 	 * @methodType get
-	 * @methodProperties primitive
 	 * 
-	 * @return the type
 	 */
-	public InstrumentType getType() {
-		return type;
+	public Iterator<Instrument> getInstrumentIterator() {
+		return instruments.iterator();
 	}
 
 	/**
 	 * @methodType set
-	 * @methodProperties primitive
-	 * 
-	 * @param type the type to set
 	 */
-	public void setType(InstrumentType type) {
-		this.type = type;
+	public void addInstrument(Instrument inst){
+		instruments.add(inst);
 	}
-
-	/**
-	 * @methodType get
-	 * @methodProperties primitive
-	 * 
-	 * @return the age
-	 */
-	public int getAge() {
-		return age;
-	}
-
-	/**
-	 * @methodType set
-	 * @methodProperties primitive
-	 * 
-	 * @param age the age to set
-	 */
-	public void setAge(int age) {
-		this.age = age;
-	}
-
 }
