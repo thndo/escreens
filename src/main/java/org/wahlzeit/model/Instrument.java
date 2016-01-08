@@ -4,6 +4,7 @@ public class Instrument {
 	protected InstrumentType type = null;
 	protected String serialNumber;
 	protected int age;
+	protected String manufactoringLocation;
 	protected int id;
 	private static int idCounter = 0;
 
@@ -67,4 +68,20 @@ public class Instrument {
 	public void setAge(int age) {
 		this.age = age;
 	}
+
+	/**
+	 * @methodType get
+	 */
+	public String getManufactoringLocation() {
+		return manufactoringLocation;
+	}
+
+	/**
+	 * @methodType set
+	 */
+	public void setManufactoringLocation(String manufactoringLocation) {
+		this.manufactoringLocation = manufactoringLocation;
+	}
+	
+	
 }

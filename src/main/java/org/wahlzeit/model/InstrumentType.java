@@ -12,6 +12,9 @@ public class InstrumentType extends DataObject{
 	 */
 	private static final long serialVersionUID = -530853351122920949L;
 	protected String typeName;
+	protected double pitchRangeStart;
+	protected double pitchRangeEnd;
+	protected String countryOfOrigin;
 	protected InstrumentType superType = null;
 	protected Set<InstrumentType> subTypes = new HashSet<InstrumentType>();
 	//protected Set<Instrument> instances = new HashSet<Instrument>(); 
@@ -78,4 +81,48 @@ public class InstrumentType extends DataObject{
 		assert (superType != null) : "Given super type is null.";
 		this.superType = superType;
 	}
+
+	/**
+	 * @methodType get
+	 */
+	public double getPitchRangeStart() {
+		return pitchRangeStart;
+	}
+
+	/**
+	 * @methodType set
+	 */
+	public void setPitchRangeStart(double pitchRangeStart) {
+		this.pitchRangeStart = pitchRangeStart;
+	}
+
+	/**
+	 * @methodType get
+	 */
+	public double getPitchRangeEnd() {
+		return pitchRangeEnd;
+	}
+
+	/**
+	 * @methodType set
+	 */
+	public void setPitchRangeEnd(double pitchRangeEnd) {
+		this.pitchRangeEnd = pitchRangeEnd;
+	}
+
+	/**
+	 * @methodType get
+	 */
+	public String getCountryOfOrigin() {
+		return countryOfOrigin;
+	}
+
+	/**
+	 * @methodType set
+	 */
+	public void setCountryOfOrigin(String countryOfOrigin) {
+		this.countryOfOrigin = countryOfOrigin;
+	}
+	
+	
 }
